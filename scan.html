@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0B0B0B">
+<meta name="robots" content="noindex">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="VEYRA Door">
+<title>VEYRA Door</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,500&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#0B0B0B; --panel:#131313; --line:#2E2A24; --line2:#3A352D; --ink:#F5F1E8; --ink2:#D9D3C7; --mute:#9C958A; --gold:#C9A96E;
+          --ok:#2F7D4F; --warn:#B7792E; --bad:#A3412F; }
+  * { box-sizing: border-box; }
+  html, body { margin:0; background:var(--bg); color:var(--ink); font-family:'Jost',system-ui,sans-serif; -webkit-font-smoothing:antialiased; }
+  .wrap { max-width:520px; margin:0 auto; padding:18px 16px 40px; }
+  .top { display:flex; justify-content:space-between; align-items:flex-end; gap:12px; padding-bottom:14px; border-bottom:1px solid var(--line); }
+  .mark { font-family:'Cormorant Garamond',Georgia,serif; font-size:24px; letter-spacing:.3em; line-height:1; }
+  .ev { font-size:12px; color:var(--mute); margin-top:6px; }
+  .count { text-align:right; }
+  .count b { font-family:'Cormorant Garamond',Georgia,serif; font-size:34px; line-height:1; }
+  .count span { display:block; font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--mute); }
+  .lock { padding:60px 0 0; text-align:center; }
+  .lock h1 { font-family:'Cormorant Garamond',Georgia,serif; font-weight:600; font-size:34px; margin:0 0 8px; }
+  input { width:100%; background:#0F0F0F; border:1px solid var(--line2); color:var(--ink); font:500 22px 'Jost',sans-serif; padding:16px; letter-spacing:.12em; text-align:center; outline:none; }
+  input:focus { border-color:var(--gold); }
+  .btn { display:block; width:100%; border:0; cursor:pointer; font:600 13px/1 'Jost',sans-serif; letter-spacing:.3em; text-transform:uppercase; padding:19px; margin-top:12px; background:var(--gold); color:#0B0B0B; }
+  .btn.line { background:transparent; color:var(--ink); border:1px solid var(--line2); }
+  #reader { margin-top:16px; border:1px solid var(--line2); background:#000; min-height:60px; overflow:hidden; }
+  #reader video { width:100% !important; display:block; }
+  .camnote { font-size:14px; color:var(--mute); padding:14px; text-align:center; }
+  .result { margin-top:16px; padding:22px 20px; min-height:132px; border:1px solid var(--line2); background:var(--panel); transition:background .15s; }
+  .result .tag { font-size:12px; font-weight:600; letter-spacing:.3em; text-transform:uppercase; }
+  .result .who { font-family:'Cormorant Garamond',Georgia,serif; font-size:34px; font-weight:600; line-height:1.1; margin-top:8px; overflow-wrap:anywhere; }
+  .result .meta { margin-top:6px; color:var(--ink2); font-size:16px; }
+  .result.ok { background:var(--ok); border-color:var(--ok); }
+  .result.used { background:var(--warn); border-color:var(--warn); }
+  .result.invalid { background:var(--bad); border-color:var(--bad); }
+  .result.ok .meta, .result.used .meta, .result.invalid .meta { color:#fff; }
+  .manual { margin-top:16px; }
+  .manual label { font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--mute); display:block; margin-bottom:8px; }
+  .row { display:flex; gap:10px; }
+  .row input { font-size:18px; text-transform:uppercase; }
+  .row .btn { width:auto; margin:0; padding:0 22px; }
+  .err { color:#F0C4BB; margin-top:12px; min-height:22px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div><div class="mark" id="brand">VEYRA</div><div class="ev"><span id="evname">Door scanner</span> · Door</div></div>
+    <div class="count" id="count" hidden><b id="cin">0</b><span>of <i id="cinv">0</i> in</span></div>
+  </div>
+
+  <div class="lock" id="lock">
+    <h1>Door scanner</h1>
+    <p style="color:var(--mute);margin:0 0 22px">Enter the staff PIN to start.</p>
+    <input id="pin" type="password" inputmode="numeric" autocomplete="off" placeholder="PIN" aria-label="Staff PIN">
+    <button class="btn" onclick="unlock()">Start scanning</button>
+    <div class="err" id="pinErr"></div>
+  </div>
+
+  <div id="scan" hidden>
+    <div id="reader"></div>
+    <div class="result" id="result" aria-live="assertive">
+      <div class="tag">Ready</div>
+      <div class="meta">Point the camera at a guest's QR code.</div>
+    </div>
+    <div class="manual">
+      <label for="code">Type a ticket ID, or use a USB / Bluetooth scanner here</label>
+      <div class="row">
+        <input id="code" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="VY-…">
+        <button class="btn" onclick="submitCode()">Check</button>
+      </div>
+    </div>
+    <button class="btn line" id="camBtn" onclick="toggleCamera()">Pause camera</button>
+  </div>
+</div>
+
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script src="config.js"></script>
+<script>
+  var C = {};
+  var PIN = '';
+  var scanner = null, camOn = false, busy = false, last = { code: '', at: 0 }, statsTimer = null;
+
+  veyraGet({ api: 'config' }).then(function (r) {
+    if (!r || !r.config) return;
+    C = r.config;
+    if (C.ACCENT) document.documentElement.style.setProperty('--gold', C.ACCENT);
+    if (C.BRAND_NAME) document.getElementById('brand').textContent = C.BRAND_NAME;
+    if (C.EVENT_NAME) document.getElementById('evname').textContent = C.EVENT_NAME;
+  }).catch(function () {});
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
+  }
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (ch) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch];
+    });
+  }
+
+  try { var savedPin = localStorage.getItem('veyraPin'); if (savedPin) document.getElementById('pin').value = savedPin; } catch (e) {}
+  document.getElementById('pin').addEventListener('keydown', function (e) { if (e.key === 'Enter') unlock(); });
+  document.getElementById('code').addEventListener('keydown', function (e) { if (e.key === 'Enter') submitCode(); });
+
+  function unlock() {
+    var p = document.getElementById('pin').value.trim();
+    if (!p) return;
+    document.getElementById('pinErr').textContent = 'Checking…';
+    veyraPost({ action: 'stats', pin: p })
+      .then(function (r) {
+        if (!r || r.result === 'pin') { document.getElementById('pinErr').textContent = 'Wrong PIN.'; return; }
+        PIN = p;
+        try { localStorage.setItem('veyraPin', p); } catch (e) {}
+        document.getElementById('pinErr').textContent = '';
+        document.getElementById('lock').hidden = true;
+        document.getElementById('scan').hidden = false;
+        showStats(r.stats);
+        startCamera();
+        if (!statsTimer) statsTimer = setInterval(refreshStats, 30000);
+      })
+      .catch(function () { document.getElementById('pinErr').textContent = 'No connection. Try again.'; });
+  }
+
+  function showStats(s) {
+    if (!s) return;
+    document.getElementById('count').hidden = false;
+    document.getElementById('cin').textContent = s.checkedIn;
+    document.getElementById('cinv').textContent = s.invited;
+  }
+  function refreshStats() {
+    veyraPost({ action: 'stats', pin: PIN }).then(function (r) { if (r && r.stats) showStats(r.stats); }).catch(function () {});
+  }
+
+  function startCamera() {
+    if (!window.Html5Qrcode) return cameraFailed('Camera library did not load.');
+    scanner = scanner || new Html5Qrcode('reader', { verbose: false });
+    scanner.start({ facingMode: 'environment' }, { fps: 10, qrbox: function (w, h) { var s = Math.floor(Math.min(w, h) * 0.7); return { width: s, height: s }; } },
+      onScan, function () {})
+      .then(function () { camOn = true; document.getElementById('camBtn').textContent = 'Pause camera'; })
+      .catch(function (e) { cameraFailed(e && e.message ? e.message : e); });
+  }
+
+  function cameraFailed(why) {
+    camOn = false;
+    document.getElementById('reader').innerHTML =
+      '<div class="camnote">Camera isn\'t available here' + (why ? ' (' + esc(String(why).slice(0, 80)) + ')' : '') +
+      '.<br>Use the ticket box below, or a USB / Bluetooth QR scanner.</div>';
+    document.getElementById('camBtn').textContent = 'Try camera again';
+    document.getElementById('code').focus();
+  }
+
+  function toggleCamera() {
+    if (camOn && scanner) {
+      scanner.stop().then(function () { camOn = false; document.getElementById('camBtn').textContent = 'Resume camera'; });
+    } else {
+      document.getElementById('reader').innerHTML = '';
+      scanner = null;
+      startCamera();
+    }
+  }
+
+  function onScan(text) {
+    var code = String(text || '').trim().toUpperCase();
+    var m = code.match(/[?&]T=([^&#]+)/i); // accept a full ticket link too
+    if (m) code = decodeURIComponent(m[1]).toUpperCase();
+    var now = Date.now();
+    if (busy || (code === last.code && now - last.at < 4000)) return;
+    last = { code: code, at: now };
+    check(code);
+  }
+
+  function submitCode() {
+    var el = document.getElementById('code');
+    var v = el.value.trim().toUpperCase();
+    if (!v) return;
+    el.value = '';
+    onScan(v);
+  }
+
+  function check(code) {
+    busy = true;
+    paint('', 'Checking…', esc(code), '');
+    veyraPost({ action: 'checkin', t: code, pin: PIN })
+      .then(function (r) { busy = false; showResult(r, code); })
+      .catch(function () { busy = false; paint('invalid', 'No connection', 'Try again', 'Ticket ' + esc(code)); });
+  }
+
+  function showResult(r, code) {
+    if (!r || r.result === 'pin') { try { localStorage.removeItem('veyraPin'); } catch (e) {} location.reload(); return; }
+    var meta = [];
+    if (r.admits) meta.push('Admits ' + r.admits);
+    if (r.seat) meta.push(esc(r.seat));
+    if (r.category) meta.push(esc(r.category));
+    if (r.result === 'ok') { paint('ok', 'Welcome · valid', esc(r.name), meta.join(' · ')); beep(880, 0.12); buzz(80); }
+    else if (r.result === 'used') { paint('used', esc(r.msg), esc(r.name), meta.join(' · ')); beep(440, 0.25); buzz([80, 60, 80]); }
+    else { paint('invalid', 'Not valid', esc(r.name || code), esc(r.msg)); beep(220, 0.4); buzz([200, 80, 200]); }
+    showStats(r.stats);
+  }
+
+  function paint(cls, tag, who, meta) {
+    var el = document.getElementById('result');
+    el.className = 'result ' + cls;
+    el.innerHTML = '<div class="tag">' + tag + '</div>' + (who ? '<div class="who">' + who + '</div>' : '') +
+      (meta ? '<div class="meta">' + meta + '</div>' : '');
+  }
+
+  var audio;
+  function beep(freq, dur) {
+    try {
+      audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+      var o = audio.createOscillator(), g = audio.createGain();
+      o.frequency.value = freq; o.connect(g); g.connect(audio.destination);
+      g.gain.setValueAtTime(0.2, audio.currentTime); g.gain.exponentialRampToValueAtTime(0.001, audio.currentTime + dur);
+      o.start(); o.stop(audio.currentTime + dur);
+    } catch (e) {}
+  }
+  function buzz(p) { try { if (navigator.vibrate) navigator.vibrate(p); } catch (e) {} }
+</script>
+</body>
+</html>

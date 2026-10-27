@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0B0B0B">
+<meta name="robots" content="noindex">
+<title>Your invitation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0B0B0B; --panel: #131313; --line: #2E2A24; --line2: #3A352D;
+    --ink: #F5F1E8; --ink2: #D9D3C7; --mute: #9C958A; --gold: #C9A96E;
+    --ok: #4F9D69; --warn: #C98A3E; --bad: #B4513F;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); }
+  body { font-family: 'Jost', system-ui, sans-serif; font-size: 16px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 480px; margin: 0 auto; padding: 28px 16px 48px; }
+  .card { background: var(--panel); border: 1px solid var(--line); }
+  .head { padding: 34px 26px 30px; background: #080808; border-bottom: 1px solid var(--line); }
+  .mark { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 30px; letter-spacing: .32em; line-height: 1; }
+  .sub { font-size: 11px; letter-spacing: .32em; text-transform: uppercase; color: var(--gold); margin-top: 10px; }
+  .logo { height: 42px; width: auto; display: block; }
+  .rule { width: 48px; height: 1px; background: var(--gold); margin: 26px 0 22px; }
+  .eyebrow { font-size: 11px; letter-spacing: .32em; text-transform: uppercase; color: var(--gold); }
+  .name { font-family: 'Cormorant Garamond', Georgia, serif; font-style: italic; font-weight: 500; font-size: 40px; line-height: 1.05; margin-top: 8px; overflow-wrap: anywhere; }
+  .body { padding: 26px; }
+  .event { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 26px; line-height: 1.2; font-weight: 600; }
+  .date { font-weight: 600; margin-top: 8px; }
+  .muted { color: var(--ink2); }
+  .qrbox { margin: 26px 0 0; border: 1px solid var(--line2); padding: 22px 18px 20px; text-align: center; }
+  .qrbox .label { font-size: 12px; font-weight: 600; letter-spacing: .3em; text-transform: uppercase; }
+  .qr { background: #fff; padding: 14px; display: inline-block; margin-top: 16px; line-height: 0; }
+  .qr canvas, .qr img { width: 220px !important; height: 220px !important; image-rendering: pixelated; }
+  .code { font-family: ui-monospace, 'Courier New', monospace; letter-spacing: .2em; color: var(--mute); font-size: 14px; margin-top: 12px; }
+  .seat { margin-top: 14px; border: 1px solid var(--line2); padding: 14px 18px; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
+  .seat .k { font-size: 11px; letter-spacing: .28em; text-transform: uppercase; color: var(--mute); }
+  .seat .v { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 22px; font-weight: 600; }
+  .seat .d { color: var(--ink2); font-size: 15px; }
+  .seat .cat { font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--gold); }
+  .btn { display: block; width: 100%; border: 0; cursor: pointer; font: 600 13px/1 'Jost', sans-serif; letter-spacing: .3em; text-transform: uppercase; padding: 20px 18px; text-align: center; text-decoration: none; }
+  .btn-gold { background: var(--gold); color: #0B0B0B; margin-top: 22px; }
+  .btn-line { background: transparent; color: var(--ink); border: 1px solid var(--line2); margin-top: 10px; }
+  .btn:active { opacity: .85; }
+  .details { margin-top: 26px; border-top: 1px solid var(--line); }
+  .row { display: flex; gap: 14px; padding: 13px 0; border-bottom: 1px solid var(--line); }
+  .row .k { flex: 0 0 104px; font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: var(--mute); padding-top: 3px; }
+  .note { margin-top: 22px; color: var(--ink2); font-size: 15px; }
+  .release { margin-top: 26px; border-left: 3px solid var(--gold); background: #1A1814; padding: 18px 20px; font-size: 15px; color: var(--ink2); }
+  .linkbtn { background: none; border: 0; color: var(--ink); font: 600 15px 'Jost', sans-serif; text-decoration: underline; text-underline-offset: 4px; padding: 0; margin-top: 10px; cursor: pointer; }
+  .sign { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 22px; margin-top: 30px; }
+  .state { padding: 16px 20px; margin-bottom: 18px; border: 1px solid; font-size: 15px; }
+  .state.ok { border-color: var(--ok); color: #BFE3CB; }
+  .state.bad { border-color: var(--bad); color: #F0C4BB; }
+  .dim .qr { opacity: .15; }
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,.92); display: none; align-items: center; justify-content: center; padding: 16px; z-index: 10; }
+  .overlay.on { display: flex; }
+  .sheet { background: var(--panel); border: 1px solid var(--line2); max-width: 420px; width: 100%; padding: 22px; max-height: 92vh; overflow: auto; }
+  .sheet h3 { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 26px; font-weight: 600; margin: 0 0 8px; }
+  .sheet img { width: 100%; display: block; margin: 14px 0; border: 1px solid var(--line); }
+  .sheet .actions { display: flex; gap: 10px; margin-top: 18px; }
+  .sheet .actions .btn { margin: 0; }
+  .missing { text-align: center; padding: 60px 20px; }
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+
+<div class="overlay" id="saveSheet" role="dialog" aria-modal="true" aria-labelledby="saveTitle">
+  <div class="sheet">
+    <h3 id="saveTitle">Save your ticket</h3>
+    <div class="muted" style="font-size:15px">Press and hold the image, then choose <b>Save image</b> or <b>Download image</b>. Or take a screenshot.</div>
+    <img id="ticketImg" alt="Your ticket">
+    <a class="btn btn-gold" id="dlLink" download style="margin-top:0">Download</a>
+    <button class="btn btn-line" onclick="closeSheet('saveSheet')">Close</button>
+  </div>
+</div>
+
+<div class="overlay" id="releaseSheet" role="dialog" aria-modal="true" aria-labelledby="relTitle">
+  <div class="sheet">
+    <h3 id="relTitle">Release your seat?</h3>
+    <div class="muted" style="font-size:15px">Your QR code will stop working and your seat will be offered to another guest. This can't be undone.</div>
+    <div class="actions">
+      <button class="btn btn-line" onclick="closeSheet('releaseSheet')">Keep my seat</button>
+      <button class="btn btn-gold" id="confirmRelease" onclick="doRelease()">Release</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="config.js"></script>
+<script>
+  var G = null;
+  var C = { BRAND_NAME: 'VEYRA', BRAND_SUBLINE: 'by HAQ Chain' };
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (ch) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch];
+    });
+  }
+  function safeUrl(u) { return /^https?:\/\//i.test(String(u || '')) ? String(u) : ''; }
+
+
+  function header(inner) {
+    var logo = safeUrl(C.LOGO_URL);
+    return '<div class="head">' +
+      (logo ? '<img class="logo" src="' + esc(logo) + '" alt="' + esc(C.BRAND_NAME) + '">'
+            : '<div class="mark">' + esc(C.BRAND_NAME) + '</div>' + (C.BRAND_SUBLINE ? '<div class="sub">' + esc(C.BRAND_SUBLINE) + '</div>' : '')) +
+      '<div class="rule"></div>' + inner + '</div>';
+  }
+
+  function render() {
+    var app = document.getElementById('app');
+    if (!G) {
+      app.innerHTML = '<div class="card">' + header('<div class="eyebrow">Ticket</div><div class="name">Not found</div>') +
+        '<div class="body missing muted">We couldn\'t find this ticket. Please open the link from your invitation again, or contact the host.</div></div>';
+      return;
+    }
+    var released = G.status === 'Released';
+    var used = G.status === 'Checked In';
+    var venue = [C.VENUE, C.CITY].filter(Boolean).join(', ');
+    var dir = safeUrl(C.DIRECTIONS_URL);
+    var state = '';
+    if (released) state = '<div class="state bad">You released this seat. This ticket is no longer valid.</div>';
+    if (used) state = '<div class="state ok">Welcome. This ticket has been checked in.</div>';
+
+    var rows = '';
+    if (venue) rows += '<div class="row"><div class="k">Venue</div><div>' + esc(venue) + '</div></div>';
+    if (C.FEATURING) rows += '<div class="row"><div class="k">' + esc(C.FEATURING_LABEL || 'Featuring') + '</div><div>' + esc(C.FEATURING) + '</div></div>';
+    if (C.DRESS_CODE) rows += '<div class="row"><div class="k">Dress code</div><div>' + esc(C.DRESS_CODE) + '</div></div>';
+
+    app.innerHTML =
+      '<div class="card' + (released ? ' dim' : '') + '">' +
+        header('<div class="eyebrow">Your invitation</div><div class="name">' + esc(G.name) + '</div>') +
+        '<div class="body">' + state +
+          '<div class="event">' + esc(C.EVENT_NAME) + '</div>' +
+          '<div class="date">' + esc(C.DATE_TEXT) + '</div>' +
+          '<div class="muted">' + esc(C.TIME_TEXT) + '</div>' +
+
+          '<div class="qrbox"><div class="label">Your entry QR code</div>' +
+            '<div class="qr" id="qr" aria-label="Entry QR code"></div>' +
+            '<div class="code">' + esc(G.id) + '</div></div>' +
+
+          '<div class="seat"><span class="k">Seat</span><span class="v">' + esc(G.seat) + '</span>' +
+            (C.SEAT_DETAIL ? '<span class="d">' + esc(C.SEAT_DETAIL) + '</span>' : '') +
+            '<span class="d">Admits ' + esc(G.admits) + '</span>' +
+            (G.category ? '<span class="cat">' + esc(G.category) + '</span>' : '') + '</div>' +
+
+          (released ? '' : '<button class="btn btn-gold" onclick="saveTicket()">Save ticket to phone</button>') +
+          (dir ? '<a class="btn btn-line" href="' + esc(dir) + '" target="_blank" rel="noopener">Directions</a>' : '') +
+
+          (rows ? '<div class="details">' + rows + '</div>' : '') +
+          (C.ARRIVAL_NOTE ? '<div class="note">' + esc(C.ARRIVAL_NOTE) + '</div>' : '') +
+
+          (!released && !used ? '<div class="release">Plans changed? Releasing your seat lets us offer it to another guest.<br>' +
+            '<button class="linkbtn" onclick="openSheet(\'releaseSheet\')">Can\'t make it anymore?</button></div>' : '') +
+
+          '<div class="sign">' + esc(C.SIGNATURE) + '</div>' +
+        '</div>' +
+      '</div>';
+
+    new QRCode(document.getElementById('qr'), {
+      text: G.id, width: 440, height: 440, colorDark: '#000000', colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.Q
+    });
+  }
+
+  function openSheet(id) { document.getElementById(id).classList.add('on'); }
+  function closeSheet(id) { document.getElementById(id).classList.remove('on'); }
+
+  function doRelease() {
+    var b = document.getElementById('confirmRelease');
+    b.disabled = true; b.textContent = 'Releasing…';
+    veyraPost({ action: 'release', t: G.id })
+      .then(function (r) {
+        closeSheet('releaseSheet');
+        if (r && r.ok) { G.status = 'Released'; render(); }
+        else alert((r && r.msg) || 'Something went wrong. Please try again.');
+        b.disabled = false; b.textContent = 'Release';
+      })
+      .catch(function () {
+        b.disabled = false; b.textContent = 'Release';
+        alert('Could not reach the server. Please check your connection and try again.');
+      });
+  }
+
+  /* ---------- Save ticket as an image ---------- */
+
+  function qrCanvas() {
+    var box = document.getElementById('qr');
+    var cv = box.querySelector('canvas');
+    if (cv && cv.width) return cv;
+    var img = box.querySelector('img');
+    return img;
+  }
+
+  function wrapText(ctx, text, x, y, maxW, lh) {
+    var words = String(text).split(' '), line = '', lines = [];
+    for (var i = 0; i < words.length; i++) {
+      var t = line ? line + ' ' + words[i] : words[i];
+      if (ctx.measureText(t).width > maxW && line) { lines.push(line); line = words[i]; } else line = t;
+    }
+    if (line) lines.push(line);
+    lines.forEach(function (l, i) { ctx.fillText(l, x, y + i * lh); });
+    return y + lines.length * lh;
+  }
+
+  function drawTicket() {
+    var W = 1080, H = 1920, P = 90;
+    var cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+    var x = cv.getContext('2d');
+    var gold = getComputedStyle(document.documentElement).getPropertyValue('--gold').trim() || '#C9A96E';
+    var serif = "'Cormorant Garamond', Georgia, serif", sans = "'Jost', Arial, sans-serif";
+
+    x.fillStyle = '#0B0B0B'; x.fillRect(0, 0, W, H);
+    x.strokeStyle = '#2E2A24'; x.lineWidth = 3; x.strokeRect(40, 40, W - 80, H - 80);
+    x.textBaseline = 'alphabetic';
+
+    x.fillStyle = '#F5F1E8'; x.font = '500 72px ' + serif;
+    if (x.letterSpacing !== undefined) x.letterSpacing = '22px';
+    x.fillText(C.BRAND_NAME || '', P, 190);
+    if (x.letterSpacing !== undefined) x.letterSpacing = '8px';
+    x.fillStyle = gold; x.font = '500 26px ' + sans;
+    if (C.BRAND_SUBLINE) x.fillText(String(C.BRAND_SUBLINE).toUpperCase(), P, 240);
+    if (x.letterSpacing !== undefined) x.letterSpacing = '0px';
+
+    x.fillStyle = gold; x.fillRect(P, 300, 110, 3);
+    if (x.letterSpacing !== undefined) x.letterSpacing = '8px';
+    x.font = '500 26px ' + sans; x.fillText('YOUR INVITATION', P, 380);
+    if (x.letterSpacing !== undefined) x.letterSpacing = '0px';
+    x.fillStyle = '#F5F1E8'; x.font = 'italic 500 92px ' + serif;
+    var y = wrapText(x, G.name, P, 480, W - 2 * P, 96);
+
+    x.font = '600 54px ' + serif; y = wrapText(x, C.EVENT_NAME, P, y + 50, W - 2 * P, 62);
+    x.font = '600 36px ' + sans; x.fillText(C.DATE_TEXT, P, y + 20);
+    x.fillStyle = '#D9D3C7'; x.font = '400 34px ' + sans; x.fillText(C.TIME_TEXT, P, y + 72);
+    var venue = [C.VENUE, C.CITY].filter(Boolean).join(', ');
+    y = wrapText(x, venue, P, y + 124, W - 2 * P, 46);
+
+    var q = 560, qx = (W - q) / 2, qy = Math.max(y + 40, 1020);
+    x.fillStyle = '#FFFFFF'; x.fillRect(qx - 30, qy - 30, q + 60, q + 60);
+    x.imageSmoothingEnabled = false;
+    var src = qrCanvas(); if (src) x.drawImage(src, qx, qy, q, q);
+
+    x.textAlign = 'center';
+    x.fillStyle = '#9C958A'; x.font = '500 32px ui-monospace, "Courier New", monospace';
+    if (x.letterSpacing !== undefined) x.letterSpacing = '6px';
+    x.fillText(G.id, W / 2, qy + q + 90);
+    if (x.letterSpacing !== undefined) x.letterSpacing = '0px';
+    x.fillStyle = '#F5F1E8'; x.font = '500 34px ' + sans;
+    var seatLine = 'Seat · ' + G.seat + (C.SEAT_DETAIL ? ' · ' + C.SEAT_DETAIL : '') + ' · Admits ' + G.admits;
+    x.fillText(seatLine, W / 2, qy + q + 150);
+    x.fillStyle = gold; x.font = '400 28px ' + sans;
+    x.fillText('Show this QR code at the entrance', W / 2, H - 110);
+    return cv;
+  }
+
+  function saveTicket() {
+    var ready = (document.fonts && document.fonts.ready) ? document.fonts.ready : Promise.resolve();
+    ready.then(function () {
+      var cv = drawTicket();
+      var url = cv.toDataURL('image/png');
+      var name = (C.BRAND_NAME || 'ticket') + '-' + G.id + '.png';
+      cv.toBlob(function (blob) {
+        var file = blob && window.File ? new File([blob], name, { type: 'image/png' }) : null;
+        if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
+          navigator.share({ files: [file], title: C.EVENT_NAME }).catch(function (e) {
+            if (!e || e.name !== 'AbortError') showSaveSheet(url, name);
+          });
+        } else {
+          showSaveSheet(url, name);
+        }
+      }, 'image/png');
+    });
+  }
+
+  function showSaveSheet(url, name) {
+    document.getElementById('ticketImg').src = url;
+    var a = document.getElementById('dlLink'); a.href = url; a.setAttribute('download', name);
+    openSheet('saveSheet');
+  }
+
+  function boot() {
+    var app = document.getElementById('app');
+    var t = (new URLSearchParams(location.search).get('t') || '').trim();
+    app.innerHTML = '<div class="card"><div class="body missing muted">Loading your invitation…</div></div>';
+    if (!t) { render(); return; }
+    veyraGet({ api: 'ticket', t: t })
+      .then(function (r) {
+        if (!r || !r.ok) throw new Error((r && r.error) || 'bad response');
+        C = r.config || {}; G = r.guest;
+        if (C.ACCENT) document.documentElement.style.setProperty('--gold', C.ACCENT);
+        document.title = (G ? G.name + ' · ' : '') + (C.EVENT_NAME || 'Invitation');
+        render();
+      })
+      .catch(function () {
+        app.innerHTML = '<div class="card"><div class="body missing muted">We couldn\'t load your invitation. Please check your connection.<br><br>' +
+          '<button class="btn btn-gold" onclick="boot()">Try again</button></div></div>';
+      });
+  }
+  boot();
+</script>
+</body>
+</html>
